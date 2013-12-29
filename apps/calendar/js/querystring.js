@@ -1,3 +1,5 @@
+// This sucks, I know. So do all the juggling to load this...
+Calendar = Calendar || {};
 Calendar.QueryString = (function() {
   // Copyright Joyent, Inc. and other Node contributors.
   //

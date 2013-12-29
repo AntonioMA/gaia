@@ -301,12 +301,20 @@ Calendar.App = (function(window) {
       this.modifier('/select-preset/', 'CreateAccount');
       this.modifier('/create-account/:preset', 'ModifyAccount');
       this.modifier('/update-account/:id', 'ModifyAccount');
+      // This drops a ugly error on the console, because this expects the second
+      // parameter to be a view (and it isn't). But it avoids the race condition
+      // I was having. And I don't really feel like creating a view just for
+      // that.
+      // So I could say I care, but I would be lying.
+      this.modifier('*', function() {});
 
       this.router.start();
 
       var pathname = window.location.pathname;
+      var search = window.location.search;
       // default view
-      if (pathname === '/index.html' || pathname === '/') {
+      if ((pathname === '/index.html' || pathname === '/') &&
+          (search !== '?activity')) {
         this.go('/month/');
       }
 
@@ -371,6 +379,26 @@ Calendar.App = (function(window) {
       setTimeout(function nextTick() {
         this.view('Errors');
       }.bind(this), 0);
+
+      if (document.location.search != '?activity') {
+        this.activityRequest = null;
+        return;
+      }
+
+      // Do this only after initializing the app...
+      navigator.mozSetMessageHandler('activity', function(activityRequest) {
+        this.activityRequest = activityRequest;
+        var activityData = activityRequest.source;
+        if (activityData.name != 'new')
+          return;
+        // I have to create a add view, with a twist...
+        // This should have been as easy as this... unfortunately nothing is
+        // never that easy
+        var url = '/event/add/?' +
+                    Calendar.QueryString.
+                        stringify(activityData.data.calendarEntry);
+        App.go(url);
+      }.bind(this));
     },
 
     /**

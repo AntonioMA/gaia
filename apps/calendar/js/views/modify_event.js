@@ -38,6 +38,11 @@ Calendar.ns('Views').ModifyEvent = (function() {
 
       this.deleteButton.addEventListener('click', this.deleteRecord);
       this.form.addEventListener('click', this.focusHandler);
+      if (this.app.activityRequest) {
+        this.cancelButton.addEventListener('click', function() {
+          this.app.activityRequest.postResult({success: false});
+        }.bind(this));
+      }
       this.form.addEventListener('submit', this.primary);
 
       var allday = this.getEl('allday');
@@ -348,7 +353,12 @@ Calendar.ns('Views').ModifyEvent = (function() {
             return;
           }
 
-          self.app.go(self.returnTo());
+          if (self.app.activityRequest) {
+            // Seems we're on an activity, just return success
+            self.app.activityRequest.postResult({success: true});
+          } else {
+            self.app.go(self.returnTo());
+          }
         });
       }
     },

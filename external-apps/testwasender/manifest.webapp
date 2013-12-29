@@ -1,0 +1,22 @@
+{
+  "name": "TestSendWA",
+  "description": "WA Send Test",
+  "launch_path": "/index.html",
+  "orientation": "portrait-primary",
+  "type": "certified",
+  "fullscreen": true,
+  "developer": {
+    "name": "amac"
+  },
+  "permissions": {
+    "webapps-manage":{},
+    "permissions": {}
+  },
+  "locales": {
+    "en-US": {
+      "name": "WA Send Test",
+      "description": "WA Send Test"
+    }
+  },
+  "default_locale": "en-US"
+}

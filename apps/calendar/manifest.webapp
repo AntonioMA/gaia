@@ -43,5 +43,15 @@
     "90": "/style/icons/Calendar_90.png",
     "120": "/style/icons/Calendar_120.png"
   },
-  "orientation": "portrait-primary"
+  "orientation": "portrait-primary",
+  "activities": {
+    "new": {
+      "filters": {
+        "type": "webcalendar/calendarentry"
+      },
+      "disposition": "inline",
+      "href": "index.html?activity",
+      "returnValue": true
+    }
+  }
 }

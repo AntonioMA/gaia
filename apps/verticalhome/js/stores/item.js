@@ -203,6 +203,7 @@
           this._pendingSaveOrders[table] = [saveOrder];
         }
       } else {
+        this._processingSave[table] = true;
         var pendingRequests = objArr.length;
         var checkIfLast = function() {
           if (!--pendingRequests) {
@@ -217,6 +218,8 @@
                                              newOrder.column,
                                              newOrder.checkPersist,
                                              newOrder.aNext));
+            } else {
+              delete this._processingSave[table];
             }
             if (typeof aNext === 'function') {
               aNext();

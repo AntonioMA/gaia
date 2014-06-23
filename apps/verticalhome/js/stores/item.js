@@ -176,18 +176,64 @@
       success(this._allItems);
     },
 
+    /**
+     * Indicates that we're currently processing a call to saveTable for a
+     * given table.
+     */
+    _processingSave: {},
+
+    /**
+     * A list of pending calls to saveTable. When a new call is executed,
+     * if a save is in process then the new save order will be stored here.
+     */
+    _pendingSaveOrders: {},
+
     saveTable: function(table, objArr, column, checkPersist, aNext) {
-      newTxn(table, 'readwrite', function(txn, store) {
-        store.clear();
-        for (var i = 0, iLen = objArr.length; i < iLen; i++) {
-          if (!checkPersist || (checkPersist && objArr[i].persistToDB)) {
-            store.put(column?objArr[i][column]:objArr[i]);
+      if (this._processingSave[table]) {
+        var saveOrder = {
+          table: table,
+          objArr: objArr,
+          column: column,
+          checkPersist: checkPersist,
+          aNext: aNext
+        };
+        if (this._pendingSaveOrders[table]) {
+          this._pendingSaveOrders[table].push(saveOrder);
+        } else {
+          this._pendingSaveOrders[table] = [saveOrder];
+        }
+      } else {
+        var pendingRequests = objArr.length;
+        var checkIfLast = function() {
+          if (!--pendingRequests) {
+            // If we have stored orders, queue the first now to be executed
+            // after aNext ends
+            var newOrder = this._pendingSaveOrders &&
+                             this._pendingSaveOrders[table].pop();
+            if (newOrder) {
+              setTimeout(this.saveTable.bind(this,
+                                             newOrder.table,
+                                             newOrder.objArr,
+                                             newOrder.column,
+                                             newOrder.checkPersist,
+                                             newOrder.aNext));
+            }
+            if (typeof aNext === 'function') {
+              aNext();
+            }
           }
-        }
-        if (typeof aNext === 'function') {
-          aNext();
-        }
-      });
+        }.bind(this);
+        newTxn(table, 'readwrite', function(txn, store) {
+          store.clear().onsuccess = function() {
+            for (var i = 0, iLen = objArr.length; i < iLen; i++) {
+              if (!checkPersist || (checkPersist && objArr[i].persistToDB)) {
+                store.put(column?objArr[i][column]:objArr[i]).onsucess =
+                  checkIfLast;
+              }
+            }
+          }.bind(this);
+        });
+      }
     },
 
     /**

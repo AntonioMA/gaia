@@ -503,8 +503,12 @@ endef
 
 include build/common.mk
 
+# Fix the 2.0 profile
+fix-profile:
+	$(call run-js-command,updateProfile)
+
 # Generate profile/
-$(PROFILE_FOLDER): preferences post-manifest app-makefiles keyboard-layouts contacts-import-services copy-build-stage-data test-agent-config offline contacts extensions $(XULRUNNER_BASE_DIRECTORY) .git/hooks/pre-commit create-default-data $(PROFILE_FOLDER)/installed-extensions.json
+$(PROFILE_FOLDER): preferences post-manifest app-makefiles keyboard-layouts contacts-import-services copy-build-stage-data test-agent-config offline contacts extensions $(XULRUNNER_BASE_DIRECTORY) .git/hooks/pre-commit create-default-data $(PROFILE_FOLDER)/installed-extensions.json fix-profile
 ifeq ($(BUILD_APP_NAME),*)
 	@echo "Profile Ready: please run [b2g|firefox] -profile $(CURDIR)$(SEP)$(PROFILE_FOLDER)"
 endif

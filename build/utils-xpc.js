@@ -372,7 +372,7 @@ function getWebapp(app, config) {
     webapp.metaData = getJSON(metaData);
     webapp.appStatus = utils.getAppStatus(webapp.metaData.type || 'web');
     if (webapp.manifest.type === 'trusted') {
-      webapp.kind = "trusted";
+      webapp.kind = "hosted-trusted";
     }
   } else {
     webapp.appStatus = utils.getAppStatus(webapp.manifest.type);

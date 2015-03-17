@@ -388,6 +388,9 @@ module.exports = {
       webapp.pckManifest = this.readZipManifest(appDir);
       webapp.metaData = this.getJSON(metaData);
       webapp.appStatus = utils.getAppStatus(webapp.metaData.type || 'web');
+      if (webapp.manifest.type === 'trusted') {
+        webapp.kind = "trusted";
+      }
     } else {
       webapp.appStatus = utils.getAppStatus(webapp.manifest.type);
     }

@@ -1,6 +1,7 @@
 {
   "L10N_OPTIMIZATION_BLACKLIST": {
-    "pdfjs": "*"
+    "pdfjs": "*",
+    "musichosted": "*"
   },
   "JS_AGGREGATION_BLACKLIST": {
   },
